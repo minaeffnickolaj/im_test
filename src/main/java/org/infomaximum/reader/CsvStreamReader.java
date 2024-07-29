@@ -48,7 +48,7 @@ public class CsvStreamReader implements StreamReader<Record>, AutoCloseable {
     }
 
     private Record rowToData(String[] row) {
-        if (row == null || row.length < 4) { //проверяем на целостность
+        if (row == null || row.length < 3) { //проверяем на целостность
             throw new IllegalArgumentException("Битая строка, недостаточно данных");
         }
         try{

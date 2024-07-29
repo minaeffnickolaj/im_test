@@ -2,6 +2,7 @@ package org.infomaximum;
 
 import com.opencsv.exceptions.CsvException;
 import org.infomaximum.reader.CsvStreamReader;
+import org.infomaximum.reader.JsonStreamReader;
 import org.infomaximum.statistics.Stats;
 
 import java.io.IOException;
@@ -23,6 +24,14 @@ public class Main {
                     stats.readFile(reader);
                     stats.printStats();
                 } catch (CsvException | IOException e) {
+
+                }
+            } else if (command.endsWith(".json")) {
+                Stats stats = new Stats();
+                try (JsonStreamReader reader = new JsonStreamReader(command);){
+                    stats.readFile(reader);
+                    stats.printStats();
+                } catch (IOException e) {
 
                 }
             }
