@@ -5,13 +5,11 @@ import java.util.Objects;
 public class Record {
     private String group;
     private String type;
-    private long number;
     private long weight;
 
-    public Record(String group, String type, long number, long weight) {
+    public Record(String group, String type, long weight) {
         this.group = group;
         this.type = type;
-        this.number = number;
         this.weight = weight;
     }
 
@@ -31,14 +29,6 @@ public class Record {
         this.type = type;
     }
 
-    public long getNumber() {
-        return number;
-    }
-
-    public void setNumber(long number) {
-        this.number = number;
-    }
-
     public long getWeight() {
         return weight;
     }
@@ -53,11 +43,11 @@ public class Record {
         if (o == null || getClass() != o.getClass()) return false;
         // объект точно является Record
         Record record = (Record) o;
-        return (number == record.number && weight == record.weight) && (Objects.equals(group, record.group) && Objects.equals(type, record.type));
+        return (weight == record.weight) && (Objects.equals(group, record.group) && Objects.equals(type, record.type));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(group, type, number, weight);
+        return Objects.hash(group, type, weight);
     }
 }
