@@ -54,9 +54,9 @@ public class CsvStreamReader implements StreamReader<Record>, AutoCloseable {
         try{
             String group = row[0];
             String type = row[1];
-            long number = Long.parseLong(row[2]);
+            //long number = Long.parseLong(row[2]);
             long weight = Long.parseLong(row[3]);
-            return new Record(group, type, number, weight);
+            return new Record(group, type, weight);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Ошибка парсинга строки");
         }
