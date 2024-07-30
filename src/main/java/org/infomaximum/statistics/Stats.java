@@ -10,13 +10,11 @@ import java.util.*;
 public class Stats {
     //минимальный-максимальный веса объектов в файле
     long minWeight, maxWeight;
-    //оставим эту мапу, т.к. групп всего десять
-    //HashMap<String, BigInteger> weightsByGroup; //мапа сумма весов по группе
+    String groupWeights;
 
     public Stats(){
         this.maxWeight = 0;
         this.minWeight = 0;
-        //this.weightsByGroup = new HashMap<>();
     }
 
     //реализуем методы нахождения min-max и суммы веса по группе
@@ -24,9 +22,12 @@ public class Stats {
 
         private long[] weights;
         private int size;
+        //веса по группе
+        private HashMap<String, BigInteger> weightsByGroup;
 
         public WeightsStats() {
             this.weights = new long[1];
+            this.weightsByGroup = new HashMap<>();
             size = 0;
         }
 
@@ -49,6 +50,21 @@ public class Stats {
             minWeight = weights[0];
             maxWeight = weights[size - 1];
         }
+
+        public void addToGroupWeight(String group, long weight) {
+            weightsByGroup.computeIfAbsent(group, k -> BigInteger.ZERO);
+            weightsByGroup.merge(group, BigInteger.valueOf(weight), BigInteger::add);
+        }
+
+        public void countWeightsByGroup(){
+            StringBuilder builder = new StringBuilder();
+            builder.append("Сумма веса по каждой группе:\n");
+            weightsByGroup.forEach((key, value) -> {
+                    builder.append("Группа:\t" + key + "\t Cуммарный вес:\t" + value + '\n');
+                }
+            );
+            groupWeights = builder.toString();
+        }
     }
 
     // не знаем какую реализацию использовать, поэтому подойдет любая реализующая StreamReader
@@ -56,9 +72,11 @@ public class Stats {
         WeightsStats weightsStats = new WeightsStats();
         while (reader.hasNext()) {
             Record record = (Record) reader.readNext();
-            weightsStats.addWeight(record.getWeight()); // добавили в массив весов
+            weightsStats.addWeight(record.getWeight());// добавили в массив весов
+            weightsStats.addToGroupWeight(record.getGroup().intern(), record.getWeight());
         }
         weightsStats.setMinMax(); //нашли максимальный - минимальный вес по файлу
+        weightsStats.countWeightsByGroup();
         weightsStats = null; //занулили ссылку на массив
         System.gc(); //почистили хип
     }
@@ -66,5 +84,6 @@ public class Stats {
     public void printStats() {
         System.out.printf("Минимальный вес: |%20d|%n", minWeight);
         System.out.printf("Максимальный вес: |%20d|%n", maxWeight);
+        System.out.println(groupWeights);
     }
 }
