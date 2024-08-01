@@ -2,6 +2,7 @@ package org.infomaximum.statistics;
 
 import org.infomaximum.entities.Record;
 import org.infomaximum.reader.StreamReader;
+import org.infomaximum.statistics.DuplicatesStats;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -11,6 +12,7 @@ public class Stats {
     //минимальный-максимальный веса объектов в файле
     long minWeight, maxWeight;
     String groupWeights;
+    String duplicateStats;
 
     public Stats(){
         this.maxWeight = 0;
@@ -20,35 +22,26 @@ public class Stats {
     //реализуем методы нахождения min-max и суммы веса по группе
     private class WeightsStats {
 
-        private long[] weights;
-        private int size;
         //веса по группе
         private HashMap<String, BigInteger> weightsByGroup;
 
         public WeightsStats() {
-            this.weights = new long[1];
             this.weightsByGroup = new HashMap<>();
-            size = 0;
         }
 
-        public void addWeight(long weight) {
-            if (size == weights.length) { // дошли до размера
-                long[] newSizeArr = new long[weights.length * 2]; //создаем новый массив в 2 раза больше
-                //Эвакуация массива в новый объем
-                System.arraycopy(weights, 0, newSizeArr, 0, weights.length);
-                weights = newSizeArr;
+        public void setMinMax(long weight){
+            // без дополнительных аллокаций памяти
+            if (minWeight == 0 && maxWeight == 0) {
+               minWeight = weight;
+               maxWeight = weight;
+            } else {
+                if (weight < minWeight) {
+                    minWeight = weight;
+                }
+                if (weight > maxWeight) {
+                    maxWeight = weight;
+                }
             }
-            weights[size++] = weight;
-        }
-
-        private void sort(){
-            Arrays.sort(weights, 0, size - 1);
-        }
-
-        public void setMinMax(){
-            sort(); //отсортировали по возрастанию
-            minWeight = weights[0];
-            maxWeight = weights[size - 1];
         }
 
         public void addToGroupWeight(String group, long weight) {
@@ -70,20 +63,23 @@ public class Stats {
     // не знаем какую реализацию использовать, поэтому подойдет любая реализующая StreamReader
     public <T> void readFile(StreamReader<T> reader) throws IOException {
         WeightsStats weightsStats = new WeightsStats();
+        DuplicatesStats duplicatesStats = new DuplicatesStats();
         while (reader.hasNext()) {
             Record record = (Record) reader.readNext();
-            weightsStats.addWeight(record.getWeight());// добавили в массив весов
+            weightsStats.setMinMax(record.getWeight()); //ищем максимальный - минимальный вес по файлу
             weightsStats.addToGroupWeight(record.getGroup().intern(), record.getWeight());
+            duplicatesStats.add(record);
         }
-        weightsStats.setMinMax(); //нашли максимальный - минимальный вес по файлу
         weightsStats.countWeightsByGroup();
         weightsStats = null; //занулили ссылку на массив
-        System.gc(); //почистили хип
+        duplicateStats = duplicatesStats.getStats();
+        System.gc();
     }
 
     public void printStats() {
+        System.out.println(duplicateStats);
+        System.out.println(groupWeights);
         System.out.printf("Минимальный вес: |%20d|%n", minWeight);
         System.out.printf("Максимальный вес: |%20d|%n", maxWeight);
-        System.out.println(groupWeights);
     }
 }
