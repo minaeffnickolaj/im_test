@@ -73,6 +73,7 @@ public class Stats {
         weightsStats.countWeightsByGroup();
         weightsStats = null; //занулили ссылку на массив
         duplicateStats = duplicatesStats.getStats();
+        duplicatesStats = null;
         System.gc();
     }
 

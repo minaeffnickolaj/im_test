@@ -20,7 +20,7 @@ public class Main {
             }
             if (command.endsWith(".csv")) {
                 Stats stats = new Stats();
-                try ( CsvStreamReader reader = new CsvStreamReader(command);){
+                try ( CsvStreamReader reader = new CsvStreamReader(command)){
                     stats.readFile(reader);
                     stats.printStats();
                 } catch (CsvException | IOException e) {
@@ -28,7 +28,7 @@ public class Main {
                 }
             } else if (command.endsWith(".json")) {
                 Stats stats = new Stats();
-                try (JsonStreamReader reader = new JsonStreamReader(command);){
+                try (JsonStreamReader reader = new JsonStreamReader(command)){
                     stats.readFile(reader);
                     stats.printStats();
                 } catch (IOException e) {
