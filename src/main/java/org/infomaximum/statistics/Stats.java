@@ -67,7 +67,7 @@ public class Stats {
         while (reader.hasNext()) {
             Record record = (Record) reader.readNext();
             weightsStats.setMinMax(record.getWeight()); //ищем максимальный - минимальный вес по файлу
-            weightsStats.addToGroupWeight(record.getGroup().intern(), record.getWeight());
+            weightsStats.addToGroupWeight(record.getGroup(), record.getWeight());
             duplicatesStats.add(record);
         }
         weightsStats.countWeightsByGroup();
